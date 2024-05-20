@@ -1,0 +1,131 @@
+name: DevSecOps Pipeline
+
+on: push
+
+jobs:
+    run_iac_scan:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Run Trivy vulnerability scanner in IaC mode
+              uses: aquasecurity/trivy-action@master
+              with:
+                scan-type: 'fs'
+                ignore-unfixed: true
+                format: 'sarif'
+                output: 'trivy-results.sarif'
+                severity: 'CRITICAL,HIGH'
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v2
+              with:
+                name: trivy-report
+                path: 'trivy-results.sarif'
+
+            - name: Run Trivy scan
+              run: trivy fs --exit-code 1 --severity HIGH,CRITICAL .
+    run_sast_scan:
+      runs-on: ubuntu-latest
+      container:
+        image: returntocorp/semgrep
+
+      steps:
+        - name: clone application source code
+          uses: actions/checkout@v3
+
+        - name: run semgrep
+          run: |
+            semgrep \
+              --sarif --output semgrep.sarif \
+              --metrics=off \
+              --config="p/default"
+
+        - name: save report as pipeline artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: semgrep.sarif
+            path: semgrep.sarif
+
+        - name: Download report
+          uses: actions/download-artifact@v2
+          with:
+            name: semgrep.sarif
+    run_sca_scan:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+        - name: Build project with Maven
+          run: mvn clean install
+        - name: Depcheck
+          uses: dependency-check/Dependency-Check_Action@main
+          id: Depcheck
+          with:
+            project: 'case-devsecops'
+            path: '.'
+            format: 'JSON'
+            out: 'depcheck'
+            args: >
+              --failOnCVSS 7
+              --enableRetired
+        - name: Upload Test results
+          uses: actions/upload-artifact@master
+          with:
+              name: Depcheck report
+              path: ${{github.workspace}}/depcheck
+    run_dast_scan:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Config docker
+          uses: docker/setup-buildx-action@v1
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '20'
+
+        - name: Install dependencies
+          run: npm install
+
+        - name: Build application
+          run: npm run build
+
+        - name: Start application
+          run: npm run start:prod &
+          env:
+            NODE_ENV: production
+
+        - name: Wait for application to start
+          run: sleep 30
+
+        - name: Set up OWASP ZAP
+          uses: zaproxy/action-baseline@v0.7.0
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            target: 'http://localhost:8080'
+            cmd_options: '-a -m 600'
+    run_secrets_scan:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+        - uses: gitleaks/gitleaks-action@v2
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    semgrep_scan:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Set up Semgrep
+          run: |
+            python3 -m pip install semgrep
+
+        - name: Run Semgrep scan
+          run: |
+            semgrep --config p/ci

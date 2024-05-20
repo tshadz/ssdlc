@@ -1,0 +1,50 @@
+# EditorConfig is awesome: https://editorconfig.org
+
+# top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Match files with a particular extension
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
+
+[*.json]
+indent_size = 2
+
+[*.yml, *.yaml]
+indent_size = 2
+
+# Python files
+[*.py]
+indent_size = 4
+
+# JavaScript/TypeScript files
+[*.js, *.jsx, *.ts, *.tsx]
+indent_size = 2
+
+# HTML files
+[*.html]
+indent_size = 2
+
+# CSS/SCSS files
+[*.css, *.scss]
+indent_size = 2
+
+# Java files
+[*.java]
+indent_size = 4
+
+# XML files
+[*.xml]
+indent_size = 2
+
+# Add any add
