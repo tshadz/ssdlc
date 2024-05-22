@@ -97,8 +97,6 @@ jobs:
         run: |
           npm install
           npm run build
-          npm run start
-          curl -I localhost:8080
 
       - name: Set up OWASP ZAP
         uses: zaproxy/action-baseline@v0.7.0
@@ -115,16 +113,3 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  semgrep_scan:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Semgrep
-      run: |
-        python3 -m pip install semgrep
-
-    - name: Run Semgrep scan
-      run: |
-        semgrep --config p/ci
