@@ -13,7 +13,6 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          vuln-type: library
           trivy-config: trivy.yaml
   run_iac_scan:
     runs-on: ubuntu-latest
