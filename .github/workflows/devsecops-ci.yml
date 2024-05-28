@@ -16,6 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: List directory contents
+        run: ls -l
+
       - name: Run Trivy vulnerability scanner in FS mode
         uses: aquasecurity/trivy-action@master
         with:
