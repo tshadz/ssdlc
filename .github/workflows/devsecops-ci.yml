@@ -24,6 +24,8 @@ jobs:
         with:
           scan-type: 'fs'
           trivy-config: trivy.yaml
+      - name: List directory contents before Trivy scan
+        run: ls -l
   run_iac_scan:
     runs-on: ubuntu-latest
     steps:
