@@ -49,10 +49,11 @@ jobs:
 
       - name: run semgrep
         run: |
-          semgrep \
-            --sarif --output semgrep.sarif \
-            --metrics=off \
-            --config="p/default"
+            semgrep ci
+# semgrep \
+#   --sarif --output semgrep.sarif \
+#   --metrics=off \
+#   --config="p/default"
 
       - name: save report as pipeline artifact
         uses: actions/upload-artifact@v3
