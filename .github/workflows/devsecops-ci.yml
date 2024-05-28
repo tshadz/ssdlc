@@ -49,7 +49,7 @@ jobs:
 
       - name: run semgrep
         run: |
-            semgrep ci
+            semgrep scan
 # semgrep \
 #   --sarif --output semgrep.sarif \
 #   --metrics=off \
