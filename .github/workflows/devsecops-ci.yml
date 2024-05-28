@@ -2,8 +2,15 @@ name: DevSecOps Pipeline
 
 on: push
 
+permissions:
+  contents: read
+
 jobs:
   run_fs_scan:
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read # only required for a private repository by github/codeql-action/upload-sari
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
