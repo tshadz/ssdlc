@@ -50,7 +50,7 @@ jobs:
       - name: run semgrep
         run: |
           semgrep \
-            --sarif --output semgrep-report \
+            --sarif --output semgrep-report.sarif \
             --metrics=off \
             --config="p/default"
 
