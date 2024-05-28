@@ -6,25 +6,6 @@ permissions:
   contents: read
 
 jobs:
-  run_fs_scan:
-    permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sari
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run Trivy vulnerability scanner in FS mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          trivy-config: trivy.yaml
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-
   run_iac_scan:
     runs-on: ubuntu-latest
     steps:
@@ -38,7 +19,7 @@ jobs:
             ignore-unfixed: true
             format: 'sarif'
             output: 'trivy-results.sarif'
-            severity: 'CRITICAL,HIGH'
+            severity: 'LOW,MEDIUM,CRITICAL,HIGH'
 
         - name: Set up Trivy
           run: |
@@ -56,7 +37,7 @@ jobs:
             path: 'trivy-results.sarif'
 
         - name: Run Trivy scan
-          run: trivy fs --exit-code 1 --severity HIGH,CRITICAL .
+          run: trivy fs --exit-code 1 --ignore-unfixed --severity LOW,MEDIUM,HIGH,CRITICAL .
   run_sast_scan:
     runs-on: ubuntu-latest
     container:
