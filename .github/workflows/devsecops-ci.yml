@@ -6,16 +6,15 @@ jobs:
   run_fs_scan:
     runs-on: ubuntu-20.04
     steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-        - name: Run Trivy vulnerability scanner in FS mode
-          uses: aquasecurity/trivy-action@master
-          with:
-            scan-type: 'fs'
-            scan-ref: '.'
-            vuln-type: library
-            trivy-config: trivy.yaml
+      - name: Run Trivy vulnerability scanner in FS mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          vuln-type: library
+          trivy-config: trivy.yaml
   run_iac_scan:
     runs-on: ubuntu-latest
     steps:
