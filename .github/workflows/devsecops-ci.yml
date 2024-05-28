@@ -6,23 +6,24 @@ jobs:
   run_fs_scan:
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+        - name: Checkout code
+          uses: actions/checkout@v3
 
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          ignore-unfixed: true
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '21'
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: trivy-report
-          path: 'trivy-results.sarif'
+        - name: Install dependencies
+          run: npm install
+
+        - name: Run Trivy vulnerability scanner in FS mode
+          uses: aquasecurity/trivy-action@master
+          with:
+            scan-type: 'fs'
+            scan-ref: '.'
+            vuln-type: library
+            trivy-config: trivy.yaml
   run_iac_scan:
     runs-on: ubuntu-latest
     steps:
