@@ -49,22 +49,24 @@ jobs:
 
       - name: run semgrep
         run: |
-            semgrep scan
-# semgrep \
-#   --sarif --output semgrep.sarif \
-#   --metrics=off \
-#   --config="p/default"
+          semgrep \
+            --sarif --output semgrep.sarif \
+            --metrics=off \
+            --config="p/default"
 
       - name: save report as pipeline artifact
         uses: actions/upload-artifact@v3
         with:
-          name: semgrep.sarif
-          path: semgrep.sarif
+          name: semgrep-report
+          path: semgrep-report.sarif
 
       - name: Download report
         uses: actions/download-artifact@v2
         with:
-          name: semgrep.sarif
+          name: semgrep-report
+
+      - name: View Semgrep report
+        run: cat semgrep-report/semgrep-report.sarif
   run_sca_scan:
     runs-on: ubuntu-latest
     steps:
