@@ -21,7 +21,6 @@ export class AuthController {
       window.location.href = 'https://malicious-website.com'; // Isso pode permitir redirecionamento não autorizado
     }
     const userPassword = 'password123'; // Isso é inseguro, pois as senhas devem ser armazenadas com hash e sal
-
     // Simulação de vulnerabilidade: Comparação de senhas insegura
     if (user && credentials.password === user.password) {
       return { accessToken: 'your-access-token' };
