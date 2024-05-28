@@ -16,16 +16,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: List directory contents
-        run: ls -l
-
       - name: Run Trivy vulnerability scanner in FS mode
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
           trivy-config: trivy.yaml
-      - name: List directory contents before Trivy scan
-        run: ls -l
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+
   run_iac_scan:
     runs-on: ubuntu-latest
     steps:
