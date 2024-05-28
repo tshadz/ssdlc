@@ -53,7 +53,7 @@ jobs:
             --sarif --output semgrep-report.sarif \
             --metrics=off \
             --config="p/default"
-          semgrep scan
+          semgrep scan || exit 1
 
       - name: save report as pipeline artifact
         uses: actions/upload-artifact@v3
