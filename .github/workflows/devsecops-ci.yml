@@ -136,12 +136,6 @@ jobs:
     - name: Run Docker Container
       run: docker run -d --name myapp -p 8080:8080 myapp:latest
 
-    - name: Wait for the container to be ready
-      run: sleep 10
-
-    - name: Check Docker container status
-      run: docker ps -a
-
     - name: Check Docker container logs
       run: docker logs myapp || true
 
@@ -163,17 +157,12 @@ jobs:
     - name: Test Container
       run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080)" != "200" ]]; do sleep 5; done' || false
 
-    # - name: OWASP ZAP Scan
-    #   run: |
-    #     docker run -v $(pwd)/zap-reports:/zap/reports -v $(pwd)/zap-wrk:/zap/wrk -t zaproxy/zap-stable zap-baseline.py -t http://myapp:8080 -r zap_report.html
-
     - name: Run Zap Owasp Scan
       uses: zaproxy/action-full-scan@v0.10.0
       with:
         docker_name: 'zaproxy/zap-stable'
         token: ${{ secrets.GITHUB_TOKEN }}
         target: 'http://localhost:8080'
-
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v3
