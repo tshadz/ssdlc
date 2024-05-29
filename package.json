@@ -27,7 +27,8 @@
     "axios": "1.2.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "lodash": "4.17.16"
+    "lodash": "4.17.16",
+    "express": "4.16.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
