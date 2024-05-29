@@ -71,20 +71,10 @@ jobs:
   run_sca_scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run npm audit
-        run: npm audit --json > npm-audit-report.json || true
-
-      - name: Upload npm audit report
-        uses: actions/upload-artifact@v2
-        with:
-          name: npm-audit-report
-          path: npm-audit-report.json
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v4
   run_dast_scan:
     runs-on: ubuntu-latest
 
