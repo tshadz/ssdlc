@@ -77,7 +77,7 @@ jobs:
         uses: actions/dependency-review-action@v4
         with:
           base-ref: 'main'
-          head-ref: 'main'
+          head-ref: 'devsecops'
   run_dast_scan:
     runs-on: ubuntu-latest
 
