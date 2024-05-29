@@ -141,6 +141,12 @@ jobs:
       run: |
         sleep 10
 
+    - name: Inspect Network Configuration
+      run: docker network inspect bridge
+
+    - name: Test with Docker Exec
+      run: docker exec myapp curl -s http://localhost:80 || exit 1
+
     - name: Test Container
       run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080)" != "200" ]]; do sleep 5; done' || false
 
