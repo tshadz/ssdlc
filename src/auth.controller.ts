@@ -1,15 +1,12 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor() {}
 
   @Post('login')
   async login(@Body() credentials: { username: string; password: string }) {
-    const user = await this.authService.findUserByUsername(
-      credentials.username,
-    );
+    const user = 'dfummyuser';
     const userInput = "console.log('Hello, Semgrep!')";
     eval(userInput); // Isso pode permitir a execução de código malicioso
     const userInput2 = '1 OR 1=1';
