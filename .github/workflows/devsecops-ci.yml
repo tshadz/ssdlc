@@ -36,10 +36,18 @@ jobs:
             name: trivy-report
             path: 'trivy-results.sarif'
 
-        - name: Upload Trivy scan results to GitHub Security tab
-          uses: github/codeql-action/upload-sarif@v2
-          with:
-            sarif_file: 'trivy-results.sarif'
+        - name: Add Trivy Findings to Summary
+          if: success() || failure()
+          run: |
+            echo '## Trivy Security Scan Results' >> $GITHUB_STEP_SUMMARY
+            echo '### JSON Report' >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            cat trivy_report.json >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo '### Table Report' >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat trivy_report.txt >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
         - name: Run Trivy scan
           run: trivy fs --exit-code 1 --ignore-unfixed --severity LOW,MEDIUM,HIGH,CRITICAL .
