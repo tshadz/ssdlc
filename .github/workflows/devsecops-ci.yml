@@ -76,8 +76,8 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v4
         with:
-          base-ref: ${{ github.base_ref }}
-          head-ref: ${{ github.head_ref }}
+          base-ref: 'main'
+          head-ref: 'main'
   run_dast_scan:
     runs-on: ubuntu-latest
 
