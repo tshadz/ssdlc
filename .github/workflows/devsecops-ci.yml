@@ -142,7 +142,7 @@ jobs:
         sleep 10
 
     - name: Test Container
-      run: curl -s localhost:8080
+      run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080)" != "200" ]]; do sleep 5; done' || false
 
     # - name: OWASP ZAP Scan
     #   run: |
