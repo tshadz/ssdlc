@@ -60,6 +60,7 @@ jobs:
             if [ "$no_vulnerabilities" = "true" ]; then
               echo 'No Vulnerabilities detected ✅' >> $GITHUB_STEP_SUMMARY
             else
+              echo 'Vulnerabilities detected ❌' >> $GITHUB_STEP_SUMMARY
               echo '<details>' >> $GITHUB_STEP_SUMMARY
               echo '<summary>JSON Report</summary>' >> $GITHUB_STEP_SUMMARY
               echo '' >> $GITHUB_STEP_SUMMARY
