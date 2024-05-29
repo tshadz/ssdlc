@@ -140,6 +140,9 @@ jobs:
       run: docker logs myapp || true
 
     - name: Test Container
+      run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080)" != "200" ]]; do sleep 5; done' || false
+
+    - name: Test Container
       run: |
         if [ "$(docker inspect -f '{{.State.Running}}' myapp)" == "true" ]; then
           curl -s http://localhost:8080 || exit 1
@@ -153,9 +156,6 @@ jobs:
 
     - name: Inspect Network Configuration
       run: docker network inspect bridge
-
-    - name: Test Container
-      run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080)" != "200" ]]; do sleep 5; done' || false
 
     - name: Run Zap Owasp Scan
       uses: zaproxy/action-full-scan@v0.10.0
