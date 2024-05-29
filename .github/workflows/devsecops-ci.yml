@@ -38,6 +38,11 @@ jobs:
 
         - name: Run Trivy scan
           run: trivy fs --exit-code 1 --ignore-unfixed --severity LOW,MEDIUM,HIGH,CRITICAL .
+
+        - name: Upload Trivy scan results to GitHub Security tab
+          uses: github/codeql-action/upload-sarif@v2
+          with:
+            sarif_file: 'trivy-results.sarif'
   run_sast_scan:
     runs-on: ubuntu-latest
     container:
