@@ -17,8 +17,8 @@ jobs:
           with:
             scan-type: 'fs'
             ignore-unfixed: true
-            format: 'sarif'
-            output: 'trivy-results.sarif'
+            format: 'json'
+            output: 'trivy_report.json'
             severity: 'LOW,MEDIUM,CRITICAL,HIGH'
 
         - name: Set up Trivy
@@ -34,7 +34,7 @@ jobs:
           uses: actions/upload-artifact@v2
           with:
             name: trivy-report
-            path: 'trivy-results.sarif'
+            path: 'trivy_report.json'
 
         - name: Add Trivy Findings to Summary
           if: success() || failure()
