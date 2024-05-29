@@ -44,18 +44,37 @@ jobs:
             name: trivy-report
             path: 'trivy_report.json'
 
+        - name: Check for Vulnerabilities
+          id: check_vulnerabilities
+          run: |
+            if grep -q '"Vulnerabilities":null' trivy_report.json; then
+              echo "no_vulnerabilities=true" >> $GITHUB_ENV
+            else
+              echo "no_vulnerabilities=false" >> $GITHUB_ENV
+            fi
+
         - name: Add Trivy Findings to Summary
           if: success() || failure()
           run: |
             echo '## Trivy Security Scan Results' >> $GITHUB_STEP_SUMMARY
-            echo '### JSON Report' >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
-            cat trivy_report.json >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            echo '### Table Report' >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            cat trivy_report.txt >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            if [ "$no_vulnerabilities" = "true" ]; then
+              echo 'No Vulnerabilities detected ✅' >> $GITHUB_STEP_SUMMARY
+            else
+              echo '<details>' >> $GITHUB_STEP_SUMMARY
+              echo '<summary>JSON Report</summary>' >> $GITHUB_STEP_SUMMARY
+              echo '' >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+              cat trivy_report.json >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+              echo '</details>' >> $GITHUB_STEP_SUMMARY
+              echo '<details>' >> $GITHUB_STEP_SUMMARY
+              echo '<summary>Table Report</summary>' >> $GITHUB_STEP_SUMMARY
+              echo '' >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+              cat trivy_report.txt >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+              echo '</details>' >> $GITHUB_STEP_SUMMARY
+            fi
 
         - name: Run Trivy scan
           run: trivy fs --exit-code 1 --ignore-unfixed --severity LOW,MEDIUM,HIGH,CRITICAL .
