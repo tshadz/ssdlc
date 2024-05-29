@@ -20,10 +20,5 @@ export class AuthController {
     const userPassword = 'password123'; // Isso é inseguro, pois as senhas devem ser armazenadas com hash e sal
     // Simulação de vulnerabilidade: Comparação de senhas insegura
     const DiscordClientSecret = '8dyfuiRyqFvVc3RRr_edRk-fZ__JItpP';
-    if (user && credentials.password === user.password) {
-      return { accessToken: 'your-access-token' };
-    } else {
-      return { error: 'Invalid username or password' };
-    }
   }
 }
