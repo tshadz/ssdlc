@@ -9,76 +9,76 @@ jobs:
   run_iac_scan:
     runs-on: ubuntu-latest
     steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-        - name: Run Trivy vulnerability scanner in fs mode
-          uses: aquasecurity/trivy-action@master
-          with:
-            scan-type: 'fs'
-            ignore-unfixed: true
-            format: 'json'
-            output: 'trivy_report.json'
-            severity: 'LOW,MEDIUM,CRITICAL,HIGH'
-        - name: Run Trivy vulnerability scanner in fs mode
-          uses: aquasecurity/trivy-action@master
-          with:
-            scan-type: 'fs'
-            ignore-unfixed: true
-            format: 'table'
-            output: 'trivy_report.txt'
-            severity: 'LOW,MEDIUM,CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner in fs mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'json'
+          output: 'trivy_report.json'
+          severity: 'LOW,MEDIUM,CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner in fs mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'table'
+          output: 'trivy_report.txt'
+          severity: 'LOW,MEDIUM,CRITICAL,HIGH'
 
-        - name: Set up Trivy
-          run: |
-            sudo apt-get update
-            sudo apt-get install -y wget apt-transport-https gnupg lsb-release
-            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-            echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-            sudo apt-get update
-            sudo apt-get install -y trivy
+      - name: Set up Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
 
-        - name: Upload artifact
-          uses: actions/upload-artifact@v2
-          with:
-            name: trivy-report
-            path: 'trivy_report.json'
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: trivy-report
+          path: 'trivy_report.json'
 
-        - name: Check for Vulnerabilities
-          id: check_vulnerabilities
-          run: |
-            if grep -q '"Vulnerabilities":null' trivy_report.json; then
-              echo "no_vulnerabilities=true" >> $GITHUB_ENV
-            else
-              echo "no_vulnerabilities=false" >> $GITHUB_ENV
-            fi
+      - name: Check for Vulnerabilities
+        id: check_vulnerabilities
+        run: |
+          if grep -q '"Vulnerabilities":null' trivy_report.json; then
+            echo "no_vulnerabilities=true" >> $GITHUB_ENV
+          else
+            echo "no_vulnerabilities=false" >> $GITHUB_ENV
+          fi
 
-        - name: Add Trivy Findings to Summary
-          if: success() || failure()
-          run: |
-            echo '## Trivy Security Scan Results' >> $GITHUB_STEP_SUMMARY
-            if [ "$no_vulnerabilities" = "true" ]; then
-              echo 'No Vulnerabilities detected ✅' >> $GITHUB_STEP_SUMMARY
-            else
-              echo 'Vulnerabilities detected ❌' >> $GITHUB_STEP_SUMMARY
-              echo '<details>' >> $GITHUB_STEP_SUMMARY
-              echo '<summary>Table Report</summary>' >> $GITHUB_STEP_SUMMARY
-              echo '' >> $GITHUB_STEP_SUMMARY
-              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-              cat trivy_report.txt >> $GITHUB_STEP_SUMMARY
-              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-              echo '</details>' >> $GITHUB_STEP_SUMMARY
-              echo '<details>' >> $GITHUB_STEP_SUMMARY
-              echo '<summary>JSON Report</summary>' >> $GITHUB_STEP_SUMMARY
-              echo '' >> $GITHUB_STEP_SUMMARY
-              echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
-              cat trivy_report.json >> $GITHUB_STEP_SUMMARY
-              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-              echo '</details>' >> $GITHUB_STEP_SUMMARY
-            fi
+      - name: Add Trivy Findings to Summary
+        if: success() || failure()
+        run: |
+          echo '## Trivy Security Scan Results' >> $GITHUB_STEP_SUMMARY
+          if [ "$no_vulnerabilities" = "true" ]; then
+            echo 'No Vulnerabilities detected ✅' >> $GITHUB_STEP_SUMMARY
+          else
+            echo 'Vulnerabilities detected ❌' >> $GITHUB_STEP_SUMMARY
+            echo '<details>' >> $GITHUB_STEP_SUMMARY
+            echo '<summary>Table Report</summary>' >> $GITHUB_STEP_SUMMARY
+            echo '' >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat trivy_report.txt >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo '</details>' >> $GITHUB_STEP_SUMMARY
+            echo '<details>' >> $GITHUB_STEP_SUMMARY
+            echo '<summary>JSON Report</summary>' >> $GITHUB_STEP_SUMMARY
+            echo '' >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            cat trivy_report.json >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo '</details>' >> $GITHUB_STEP_SUMMARY
+          fi
 
-        - name: Run Trivy scan
-          run: trivy fs --exit-code 1 --ignore-unfixed --severity LOW,MEDIUM,HIGH,CRITICAL .
+      - name: Run Trivy scan
+        run: trivy fs --exit-code 1 --ignore-unfixed --severity LOW,MEDIUM,HIGH,CRITICAL .
   run_sast_scan:
     runs-on: ubuntu-latest
     container:
@@ -171,13 +171,23 @@ jobs:
         path: zap-reports/zap_report.html
 
     - name: Add ZAP Findings to Summary
-      if: success() || failure()
+      if: success()
       run: |
         echo '## OWASP ZAP Security Scan Results' >> $GITHUB_STEP_SUMMARY
-        echo '### ZAP HTML Report' >> $GITHUB_STEP_SUMMARY
+        echo 'No Vulnerabilities detected ✅' >> $GITHUB_STEP_SUMMARY
+
+    - name: Add ZAP Findings to Summary
+      if: failure()
+      run: |
+        echo '## OWASP ZAP Security Scan Results' >> $GITHUB_STEP_SUMMARY
+        echo 'Vulnerabilities detected ❌' >> $GITHUB_STEP_SUMMARY
+        echo '<details>' >> $GITHUB_STEP_SUMMARY
+        echo '<summary>ZAP HTML Report</summary>' >> $GITHUB_STEP_SUMMARY
+        echo '' >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`html" >> $GITHUB_STEP_SUMMARY
         cat zap-reports/zap_report.html >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        echo '</details>' >> $GITHUB_STEP_SUMMARY
 
     - name: Stop and Remove Docker Container
       run: |
