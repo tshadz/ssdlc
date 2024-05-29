@@ -133,19 +133,42 @@ jobs:
       run: |
         docker build -t myapp:latest .
 
-    - name: Run Docker Container
-      run: |
-        docker run -d --name myapp -p 8080:80 myapp:latest
+        - name: Run Docker Container
+        run: docker run -d --name myapp -p 8080:80 myapp:latest
 
     - name: Wait for the container to be ready
+      run: sleep 10
+
+    - name: Check Docker container status
+      run: docker ps -a
+
+    - name: Check Docker container logs
+      run: docker logs myapp || true
+
+    - name: Test Container
       run: |
-        sleep 10
+        if [ "$(docker inspect -f '{{.State.Running}}' myapp)" == "true" ]; then
+          curl -s http://localhost:8080 || exit 1
+        else
+          echo "Container is not running"
+          exit 1
+        fi
+
+    - name: Check running containers
+      run: docker ps
 
     - name: Inspect Network Configuration
       run: docker network inspect bridge
 
-    - name: Test with Docker Exec
-      run: docker exec myapp curl -s http://localhost:80 || exit 1
+    - name: Test from within the container
+      if: always()
+      run: |
+        if [ "$(docker inspect -f '{{.State.Running}}' myapp)" == "true" ]; then
+          docker exec myapp curl -s http://localhost:80 || exit 1
+        else
+          echo "Container is not running"
+          exit 1
+        fi
 
     - name: Test Container
       run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080)" != "200" ]]; do sleep 5; done' || false
