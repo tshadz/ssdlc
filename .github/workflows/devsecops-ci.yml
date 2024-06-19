@@ -4,6 +4,8 @@ on: push
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   run_iac_scan:
